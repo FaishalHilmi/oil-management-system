@@ -1,12 +1,13 @@
 import { Edit, History, User, X } from "lucide-react";
-
-import type { Partner } from "@/pages/partner/PartnerPage";
+import type { Partner } from "@/types";
+import { formatCurrency, formatDate, formatNumber } from "@/utils/format";
 
 type Props = {
   open: boolean;
   partner: Partner | null;
   onClose: () => void;
   onEdit: () => void;
+  onDelete: () => void;
 };
 
 export default function PartnerDetailModal({
@@ -14,6 +15,7 @@ export default function PartnerDetailModal({
   partner,
   onClose,
   onEdit,
+  onDelete,
 }: Props) {
   if (!open || !partner) return null;
 
@@ -50,7 +52,7 @@ export default function PartnerDetailModal({
               </span>
 
               <span className="text-sm font-bold text-slate-800">
-                {partner.name}
+                {partner.partner_name}
               </span>
             </div>
 
@@ -60,7 +62,7 @@ export default function PartnerDetailModal({
               </span>
 
               <span className="text-sm font-semibold text-slate-600">
-                {partner.phone}
+                {partner.phone_number}
               </span>
             </div>
 
@@ -82,24 +84,27 @@ export default function PartnerDetailModal({
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            <StatCard title="Total TRX" value={partner.totalTransaction} />
+            <StatCard title="Total TRX" value={partner.total_transaction} />
 
-            <StatCard title="Total Dus" value={partner.totalBox} />
+            <StatCard
+              title="Total Dus"
+              value={formatNumber(partner.total_quantity)}
+            />
 
             <StatCard
               title="Total Modal"
-              value={`Rp${partner.totalCapital.toLocaleString("id-ID")}`}
+              value={formatCurrency(partner.total_capital)}
             />
 
             <StatCard
               title="Total Profit"
-              value={`Rp${partner.totalProfit.toLocaleString("id-ID")}`}
+              value={formatCurrency(partner.total_profit)}
               valueClassName="text-emerald-600"
             />
 
             <StatCard
               title="Rerata Profit"
-              value={`Rp${partner.averageProfit.toLocaleString("id-ID")}`}
+              value={formatCurrency(partner.average_profit)}
             />
           </div>
 
@@ -121,20 +126,20 @@ export default function PartnerDetailModal({
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100">
+                {/* <tbody className="divide-y divide-slate-100">
                   {partner.histories.map((history) => (
                     <tr key={history.id}>
-                      <td className="p-3">{history.date}</td>
+                      <td className="p-3">{formatDate(history.date)}</td>
 
                       <td className="p-3 font-medium">
-                        {history.transactionNumber}
+                        {history.transaction_number}
                       </td>
 
                       <td className="p-3 text-center">{history.quantity}</td>
 
                       <td className="p-3 font-semibold text-emerald-600">
                         Rp
-                        {history.profit.toLocaleString("id-ID")}
+                        {formatCurrency(history.profit)}
                       </td>
 
                       <td className="p-3 text-right">
@@ -142,7 +147,9 @@ export default function PartnerDetailModal({
                           className={`inline-flex rounded-full px-2 py-1 text-[10px] font-bold ${
                             history.status === "Selesai"
                               ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
+                              : history.status === "Berjalan"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-rose-100 text-rose-700"
                           }`}
                         >
                           {history.status}
@@ -161,6 +168,17 @@ export default function PartnerDetailModal({
                       </td>
                     </tr>
                   )}
+                </tbody> */}
+                <tbody>
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="p-8 text-center text-xs text-slate-400"
+                    >
+                      Riwayat transaksi akan tersedia setelah Module Transaction
+                      selesai.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -170,6 +188,15 @@ export default function PartnerDetailModal({
         {/* Footer */}
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-slate-100 bg-slate-50 p-5">
+          {partner.total_transaction === 0 && (
+            <button
+              onClick={onDelete}
+              className="inline-flex h-9 items-center justify-center rounded-md bg-red-600 px-4 text-sm font-medium text-white hover:bg-red-700"
+            >
+              Hapus Mitra
+            </button>
+          )}
+
           <button
             onClick={onEdit}
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"

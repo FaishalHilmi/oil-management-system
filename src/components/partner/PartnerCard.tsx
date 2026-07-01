@@ -1,15 +1,6 @@
 import { ChevronRight, MapPin, Phone } from "lucide-react";
-
-type Partner = {
-  id: number;
-  name: string;
-  phone: string;
-  address: string;
-  status: "Aktif" | "Nonaktif";
-  totalTransaction: number;
-  totalBox: number;
-  totalProfit: number;
-};
+import { formatCompactCurrency } from "@/utils/format";
+import type { Partner } from "@/types";
 
 type Props = {
   partner: Partner;
@@ -24,17 +15,19 @@ export default function PartnerCard({ partner, onClick }: Props) {
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-lg font-bold text-slate-800">
-            {partner.name.charAt(0)}
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-lg font-bold text-slate-800 uppercase">
+            {partner.partner_name.charAt(0)}
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-slate-900">{partner.name}</h3>
+            <h3 className="text-sm font-bold capitalize text-slate-900">
+              {partner.partner_name}
+            </h3>
 
             <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
               <Phone className="h-3.5 w-3.5" />
 
-              {partner.phone}
+              {partner.phone_number}
             </div>
           </div>
         </div>
@@ -61,7 +54,7 @@ export default function PartnerCard({ partner, onClick }: Props) {
           <p className="text-[10px] uppercase text-slate-400">TRX</p>
 
           <p className="mt-1 text-base font-bold text-slate-900">
-            {partner.totalTransaction}
+            {partner.total_transaction}
           </p>
         </div>
 
@@ -69,7 +62,7 @@ export default function PartnerCard({ partner, onClick }: Props) {
           <p className="text-[10px] uppercase text-slate-400">Dus</p>
 
           <p className="mt-1 text-base font-bold text-slate-900">
-            {partner.totalBox}
+            {partner.total_quantity}
           </p>
         </div>
 
@@ -77,7 +70,7 @@ export default function PartnerCard({ partner, onClick }: Props) {
           <p className="text-[10px] uppercase text-slate-400">Profit</p>
 
           <p className="mt-1 font-bold text-emerald-600">
-            Rp {(partner.totalProfit / 1000000).toFixed(1)} Jt
+            {formatCompactCurrency(partner.total_profit)}
           </p>
         </div>
       </div>

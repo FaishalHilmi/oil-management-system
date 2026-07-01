@@ -1,14 +1,49 @@
 import { X } from "lucide-react";
-
-import type { Partner } from "@/pages/partner/PartnerPage";
+import type { Partner, PartnerPayload, PartnerStatus } from "@/types";
+import { useEffect, useState } from "react";
 
 type Props = {
   open: boolean;
   partner: Partner | null;
   onClose: () => void;
+  onSave: (data: PartnerPayload) => Promise<void>;
 };
 
-export default function PartnerFormModal({ open, partner, onClose }: Props) {
+export default function PartnerFormModal({
+  open,
+  partner,
+  onClose,
+  onSave,
+}: Props) {
+  const [form, setForm] = useState<PartnerPayload>({
+    partner_name: "",
+    phone_number: "",
+    address: "",
+    status: "Aktif",
+  });
+
+  useEffect(() => {
+    if (partner) {
+      setForm({
+        partner_name: partner.partner_name,
+        phone_number: partner.phone_number,
+        address: partner.address,
+        status: partner.status,
+      });
+    } else {
+      setForm({
+        partner_name: "",
+        phone_number: "",
+        address: "",
+        status: "Aktif",
+      });
+    }
+  }, [partner, open]);
+
+  const handleSubmit = async () => {
+    await onSave(form);
+  };
+
   if (!open) return null;
 
   return (
@@ -45,7 +80,13 @@ export default function PartnerFormModal({ open, partner, onClose }: Props) {
 
             <input
               type="text"
-              defaultValue={partner?.name ?? ""}
+              value={form.partner_name}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  partner_name: e.target.value,
+                })
+              }
               placeholder="Misal: Andi Wijaya"
               className="h-9 w-full rounded-md border border-slate-200 px-3 text-sm focus:outline-none"
             />
@@ -58,7 +99,13 @@ export default function PartnerFormModal({ open, partner, onClose }: Props) {
 
             <input
               type="text"
-              defaultValue={partner?.phone ?? ""}
+              value={form.phone_number}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  phone_number: e.target.value,
+                })
+              }
               placeholder="Misal: 081234567890"
               className="h-9 w-full rounded-md border border-slate-200 px-3 text-sm focus:outline-none"
             />
@@ -71,7 +118,13 @@ export default function PartnerFormModal({ open, partner, onClose }: Props) {
 
             <input
               type="text"
-              defaultValue={partner?.address ?? ""}
+              value={form.address}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  address: e.target.value,
+                })
+              }
               placeholder="Opsional"
               className="h-9 w-full rounded-md border border-slate-200 px-3 text-sm focus:outline-none"
             />
@@ -83,7 +136,13 @@ export default function PartnerFormModal({ open, partner, onClose }: Props) {
             </label>
 
             <select
-              defaultValue={partner?.status ?? "Aktif"}
+              value={form.status}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  status: e.target.value as PartnerStatus,
+                })
+              }
               className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-sm focus:outline-none"
             >
               <option value="Aktif">Aktif</option>
@@ -103,6 +162,7 @@ export default function PartnerFormModal({ open, partner, onClose }: Props) {
 
           <button
             type="button"
+            onClick={handleSubmit}
             className="inline-flex h-9 items-center justify-center rounded-md bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800"
           >
             {partner ? "Simpan Perubahan" : "Simpan Mitra"}
